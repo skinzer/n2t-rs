@@ -1,0 +1,44 @@
+[package]
+name = "n2t_simulator"
+version = "0.1.0"
+edition = "2021"
+authors = ["nand2tetris-rust"]
+description = "Rust implementation of the nand2tetris hardware and software simulator"
+license = "MIT"
+
+[dependencies]
+# Parser generation and grammar handling  
+tree-sitter = "0.20"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Async runtime (for future async features)
+tokio = { version = "1.0", features = ["sync", "fs", "rt", "rt-multi-thread"] }
+
+# Serialization for file formats
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Utilities
+indexmap = "2.0"  # Ordered maps
+bitvec = "1.0"    # Bit manipulation for hardware simulation
+
+[dev-dependencies]
+# Testing utilities
+pretty_assertions = "1.4"
+proptest = "1.4"
+
+[lib]
+name = "n2t_simulator"
+path = "src/lib.rs"
+
+[[bin]]
+name = "n2t_cli"
+path = "src/bin/cli.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
