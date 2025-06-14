@@ -1,9 +1,8 @@
 // Tests for combinatorial logic chips
 // Translated from TypeScript chip.test.ts describe("combinatorial")
 
-use crate::chip::*;
-use crate::chip::pin::{HIGH, LOW};
 use crate::chip::builder::ChipBuilder;
+use crate::chip::pin::{HIGH, LOW};
 
 #[test]
 fn test_nand_chip() {

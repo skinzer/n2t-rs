@@ -1,7 +1,6 @@
 // Tests related to pin parsing functionality
 // Covers pin range parsing, pin references, and SubBus operations
 
-use crate::chip::*;
 use crate::chip::subbus::{PinRange, parse_pin_range};
 use crate::languages::hdl::HdlParser;
 

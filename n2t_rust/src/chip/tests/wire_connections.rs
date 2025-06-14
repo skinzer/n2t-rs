@@ -125,8 +125,8 @@ fn test_subbus_creation() {
     let source_bus = Rc::new(RefCell::new(Bus::new("source".to_string(), 16)));
     
     // Create input subbus for bits 0-7
-    let range = PinRange::new_range("source".to_string(), 0, 7);
-    let input_subbus = create_input_subbus(source_bus.clone(), range.clone()).unwrap();
+    let range = PinRange::new_range("source".to_string(), 0, 7).unwrap();
+    let input_subbus = create_input_subbus(source_bus.clone(), &range).unwrap();
     
     // Set source bus value
     source_bus.borrow_mut().set_bus_voltage(0xFF00); // Upper 8 bits set
@@ -147,8 +147,8 @@ fn test_output_subbus() {
     let target_bus = Rc::new(RefCell::new(Bus::new("target".to_string(), 16)));
     
     // Create output subbus for bits 8-15
-    let range = PinRange::new_range("target".to_string(), 8, 15);
-    let output_subbus = create_output_subbus(target_bus.clone(), range.clone()).unwrap();
+    let range = PinRange::new_range("target".to_string(), 8, 15).unwrap();
+    let output_subbus = create_output_subbus(target_bus.clone(), &range).unwrap();
     
     // Set subbus value
     output_subbus.borrow_mut().set_bus_voltage(0xAB);
@@ -310,15 +310,15 @@ fn test_bus_voltage_masking() {
     source_bus.borrow_mut().set_bus_voltage(0xFFFF);
     
     // Create subbus for lower 4 bits
-    let range = PinRange::new_range("source".to_string(), 0, 3);
-    let subbus = create_input_subbus(source_bus.clone(), range).unwrap();
+    let range = PinRange::new_range("source".to_string(), 0, 3).unwrap();
+    let subbus = create_input_subbus(source_bus.clone(), &range).unwrap();
     
     // Should only see lower 4 bits
     assert_eq!(subbus.borrow().bus_voltage(), 0x0F); // Only 4 bits
     
     // Create subbus for upper 4 bits  
-    let range = PinRange::new_range("source".to_string(), 12, 15);
-    let subbus = create_input_subbus(source_bus.clone(), range).unwrap();
+    let range = PinRange::new_range("source".to_string(), 12, 15).unwrap();
+    let subbus = create_input_subbus(source_bus.clone(), &range).unwrap();
     
     // Should see the upper 4 bits shifted down
     assert_eq!(subbus.borrow().bus_voltage(), 0x0F); // Upper 4 bits, shifted to position 0-3

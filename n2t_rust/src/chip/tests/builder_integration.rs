@@ -1,10 +1,9 @@
 // Tests for ChipBuilder integration and comprehensive chip testing
 // Covers builder functionality, dynamic chip creation, and all builtin chips
 
-use crate::chip::*;
-use crate::chip::pin::{HIGH, LOW};
 use crate::chip::builder::ChipBuilder;
-use crate::chip::builtins::{ClockedChip, DffChip, BitChip, RegisterChip, PcChip};
+use crate::chip::pin::{HIGH, LOW};
+// Note: Removed unused imports for cleaner compilation
 
 #[test]
 fn test_builder_creates_all_basic_logic_chips() {

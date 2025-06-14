@@ -1,9 +1,8 @@
 // Tests for ALU (Arithmetic Logic Unit) functionality
 // Translated from TypeScript ALU tests and project requirements
 
-use crate::chip::*;
-use crate::chip::pin::{HIGH, LOW};
 use crate::chip::builder::ChipBuilder;
+use crate::chip::pin::{HIGH, LOW};
 
 #[test]
 fn test_alu_basic_operations() {
@@ -48,9 +47,9 @@ fn test_alu_zero_flag() {
     
     alu.eval().unwrap();
     
-    let output = alu.get_pin("out").unwrap().borrow().bus_voltage();
-    let zr = alu.get_pin("zr").unwrap().borrow().voltage(None).unwrap();
-    let ng = alu.get_pin("ng").unwrap().borrow().voltage(None).unwrap();
+    let _output = alu.get_pin("out").unwrap().borrow().bus_voltage();
+    let _zr = alu.get_pin("zr").unwrap().borrow().voltage(None).unwrap();
+    let _ng = alu.get_pin("ng").unwrap().borrow().voltage(None).unwrap();
     
     // AND(5, 5) = 5, then negate = ~5 = not zero in 16-bit
     // Let's test a case that actually produces zero

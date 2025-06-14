@@ -1,8 +1,8 @@
 // Tests for wide (16-bit) operations
 // Translated from TypeScript chip.test.ts describe("wide")
 
-use crate::chip::*;
 use crate::chip::builder::ChipBuilder;
+use crate::chip::Bus;
 
 #[test]
 fn test_not16_chip() {
@@ -124,6 +124,7 @@ fn test_mux16_chip() {
 #[test]
 fn test_bus_voltage_operations() {
     // Test bus voltage manipulation functions
+    use crate::chip::pin::Pin;
     let mut pin = Bus::new("wide".to_string(), 16);
     pin.set_bus_voltage(0xF00F);
     

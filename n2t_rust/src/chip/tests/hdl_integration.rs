@@ -1,7 +1,6 @@
 // Tests for HDL parsing and chip creation integration
 // Covers HDL language parsing, chip construction, and error handling
 
-use crate::chip::*;
 use crate::chip::builder::ChipBuilder;
 use crate::languages::hdl::HdlParser;
 
@@ -142,7 +141,7 @@ fn test_hdl_chip_with_internal_pins() {
 #[test]
 fn test_builder_creates_chip_from_hdl() {
     // Test that ChipBuilder can create a chip from HDL definition
-    let builder = ChipBuilder::new();
+    let _builder = ChipBuilder::new();
     
     let hdl = r#"
         CHIP SimpleBuffer {

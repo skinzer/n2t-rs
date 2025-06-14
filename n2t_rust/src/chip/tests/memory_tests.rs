@@ -1,10 +1,8 @@
 // Tests for memory chips (RAM hierarchy)
 // Translated from TypeScript memory tests and sequential logic
 
-use crate::chip::*;
-use crate::chip::pin::{HIGH, LOW};
 use crate::chip::builder::ChipBuilder;
-use crate::chip::builtins::{ClockedChip, Ram8Chip, Ram64Chip, Ram512Chip, Ram4kChip, Ram16kChip};
+use crate::chip::pin::{HIGH, LOW};
 
 #[test]
 fn test_ram8_basic_operations() {
@@ -44,10 +42,7 @@ fn test_ram8_address_isolation() {
         ram8.get_pin("address").unwrap().borrow_mut().set_bus_voltage(addr as u16);
         ram8.get_pin("load").unwrap().borrow_mut().pull(HIGH, None).unwrap();
         
-        if let Ok(clocked_ram) = ram8.as_any_mut().downcast_mut::<Ram8Chip>() {
-            clocked_ram.tick(HIGH).unwrap();
-            clocked_ram.tock(LOW).unwrap();
-        }
+        ram8.eval().unwrap();
     }
     
     // Verify each address contains the correct value
@@ -122,7 +117,7 @@ fn test_ram4k_addressing() {
     let test_addresses = [0, 1, 512, 1024, 2048, 4095];
     
     for &addr in &test_addresses {
-        let test_value = (addr % 65536) + 3000; // Keep within 16-bit range
+        let test_value = (addr % 32768) + 3000; // Keep within 16-bit range
         
         // Write value
         ram4k.get_pin("in").unwrap().borrow_mut().set_bus_voltage(test_value);
@@ -148,7 +143,7 @@ fn test_ram16k_max_capacity() {
     let test_addresses = [0, 1, 1024, 8192, 16383];
     
     for &addr in &test_addresses {
-        let test_value = (addr % 65536) + 4000;
+        let test_value = (addr % 32768) + 4000;
         
         // Write value
         ram16k.get_pin("in").unwrap().borrow_mut().set_bus_voltage(test_value);
@@ -175,19 +170,13 @@ fn test_memory_load_control() {
     ram8.get_pin("address").unwrap().borrow_mut().set_bus_voltage(0);
     ram8.get_pin("load").unwrap().borrow_mut().pull(HIGH, None).unwrap();
     
-    if let Ok(clocked_ram) = ram8.as_any_mut().downcast_mut::<Ram8Chip>() {
-        clocked_ram.tick(HIGH).unwrap();
-        clocked_ram.tock(LOW).unwrap();
-    }
+    ram8.eval().unwrap();
     
     // Change input but disable load - value should not change
     ram8.get_pin("in").unwrap().borrow_mut().set_bus_voltage(2000);
     ram8.get_pin("load").unwrap().borrow_mut().pull(LOW, None).unwrap();
     
-    if let Ok(clocked_ram) = ram8.as_any_mut().downcast_mut::<Ram8Chip>() {
-        clocked_ram.tick(HIGH).unwrap();
-        clocked_ram.tock(LOW).unwrap();
-    }
+    ram8.eval().unwrap();
     
     // Read back - should still be original value
     ram8.eval().unwrap();
@@ -206,10 +195,7 @@ fn test_memory_reset() {
         ram8.get_pin("address").unwrap().borrow_mut().set_bus_voltage(addr);
         ram8.get_pin("load").unwrap().borrow_mut().pull(HIGH, None).unwrap();
         
-        if let Ok(clocked_ram) = ram8.as_any_mut().downcast_mut::<Ram8Chip>() {
-            clocked_ram.tick(HIGH).unwrap();
-            clocked_ram.tock(LOW).unwrap();
-        }
+        ram8.eval().unwrap();
     }
     
     // Reset should clear all memory
@@ -237,10 +223,7 @@ fn test_memory_concurrent_access() {
     ram64.get_pin("address").unwrap().borrow_mut().set_bus_voltage(10);
     ram64.get_pin("load").unwrap().borrow_mut().pull(HIGH, None).unwrap();
     
-    if let Ok(clocked_ram) = ram64.as_any_mut().downcast_mut::<Ram64Chip>() {
-        clocked_ram.tick(HIGH).unwrap();
-        clocked_ram.tock(LOW).unwrap();
-    }
+    ram64.eval().unwrap();
     
     // Change to read from address 20 (different address)
     ram64.get_pin("address").unwrap().borrow_mut().set_bus_voltage(20);
