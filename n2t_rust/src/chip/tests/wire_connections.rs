@@ -335,22 +335,26 @@ fn test_multi_part_composite_chip() {
     host_chip.add_input_pin("c".to_string(), Rc::new(RefCell::new(Bus::new("c".to_string(), 1))));
     host_chip.add_output_pin("out".to_string(), Rc::new(RefCell::new(Bus::new("out".to_string(), 1))));
     
+    // Add internal pin for connecting AND output to OR input
+    host_chip.add_internal_pin("and_out".to_string(), Rc::new(RefCell::new(Bus::new("and_out".to_string(), 1))));
+    
     // Create parts: (a AND b) OR c
     let builder = ChipBuilder::new();
     let and_part = builder.build_builtin_chip("And").unwrap();
     let or_part = builder.build_builtin_chip("Or").unwrap();
     
-    // Wire AND gate: a -> And.a, b -> And.b
+    // Wire AND gate: a -> And.a, b -> And.b, And.out -> and_out
     let and_connections = vec![
         Connection::new(PinSide::new("a".to_string()), PinSide::new("a".to_string())),
         Connection::new(PinSide::new("b".to_string()), PinSide::new("b".to_string())),
+        Connection::new(PinSide::new("and_out".to_string()), PinSide::new("out".to_string())), // AND output to internal pin
     ];
     
-    // Wire OR gate: And.out -> Or.a, c -> Or.b, Or.out -> out
+    // Wire OR gate: and_out -> Or.a, c -> Or.b, Or.out -> out
     let or_connections = vec![
-        Connection::new(PinSide::new("out".to_string()), PinSide::new("a".to_string())), // AND output to OR input
-        Connection::new(PinSide::new("c".to_string()), PinSide::new("b".to_string())),   // c to OR input
-        Connection::new(PinSide::new("out".to_string()), PinSide::new("out".to_string())), // OR output to chip output
+        Connection::new(PinSide::new("and_out".to_string()), PinSide::new("a".to_string())), // Internal pin to OR input
+        Connection::new(PinSide::new("c".to_string()), PinSide::new("b".to_string())),        // c to OR input
+        Connection::new(PinSide::new("out".to_string()), PinSide::new("out".to_string())),    // OR output to chip output
     ];
     
     host_chip.wire(and_part, and_connections).unwrap();

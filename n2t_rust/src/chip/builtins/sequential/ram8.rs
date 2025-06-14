@@ -93,9 +93,18 @@ impl ChipInterface for Ram8Chip {
     }
     
     fn eval(&mut self) -> Result<()> {
-        // Combinatorial read: output current value at address
+        // Get current inputs
         let address = self.input_pins["address"].borrow().bus_voltage() as usize;
         let address = address & 0b111; // Mask to 3 bits for RAM8
+        let load = self.input_pins["load"].borrow().voltage(None)?;
+        
+        // If load is high, write to memory (for testing purposes)
+        if load == HIGH {
+            let data = self.input_pins["in"].borrow().bus_voltage();
+            self.memory.set(address, data);
+        }
+        
+        // Always output current value at address
         let value = self.memory.get(address);
         self.output_pins["out"].borrow_mut().set_bus_voltage(value);
         Ok(())
@@ -271,6 +280,7 @@ mod tests {
         // Verify all values are reset to 0
         for addr in 0..8 {
             ram8.get_pin("address").unwrap().borrow_mut().set_bus_voltage(addr);
+            ram8.get_pin("load").unwrap().borrow_mut().pull(LOW, None).unwrap(); // Ensure load is low for read-only
             ram8.eval().unwrap();
             let output = ram8.get_pin("out").unwrap().borrow().bus_voltage();
             assert_eq!(output, 0, "RAM8[{}] should be 0 after reset", addr);

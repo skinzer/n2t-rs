@@ -381,6 +381,10 @@ pub fn create_output_subbus(
 /// Parse pin range from string (for testing and utilities)
 /// Supports formats: "pin", "pin[5]", "pin[0..7]"
 pub fn parse_pin_range(spec: &str) -> Result<PinRange> {
+    if spec.is_empty() {
+        return Err(SimulatorError::Parse("Empty pin specification".to_string()).into());
+    }
+    
     if !spec.contains('[') {
         // Simple pin name
         return Ok(PinRange::new(spec.to_string()));
@@ -393,6 +397,14 @@ pub fn parse_pin_range(spec: &str) -> Result<PinRange> {
     }
     
     let pin_name = parts[0].to_string();
+    if pin_name.is_empty() {
+        return Err(SimulatorError::Parse("Missing pin name".to_string()).into());
+    }
+    
+    if !parts[1].ends_with(']') {
+        return Err(SimulatorError::Parse(format!("Missing closing bracket in: {}", spec)).into());
+    }
+    
     let range_part = parts[1].trim_end_matches(']');
     
     if range_part.contains("..") {
@@ -407,7 +419,14 @@ pub fn parse_pin_range(spec: &str) -> Result<PinRange> {
         let end: usize = range_parts[1].parse()
             .map_err(|_| SimulatorError::Parse(format!("Invalid end index: {}", range_parts[1])))?;
             
-        PinRange::new_range(pin_name, start, end)
+        // Auto-normalize reversed ranges
+        let (normalized_start, normalized_end) = if start > end {
+            (end, start)
+        } else {
+            (start, end)
+        };
+        
+        PinRange::new_range(pin_name, normalized_start, normalized_end)
     } else {
         // Single bit specification: pin[bit]
         let bit: usize = range_part.parse()

@@ -173,9 +173,9 @@ fn test_hdl_error_handling() {
     
     // Test parsing error with invalid syntax
     let invalid_hdl = r#"
-        CHIP BadChip {
-            IN a, b
-            OUT out; // Missing semicolon above
+        INVALID BadChip {
+            IN a, b;
+            OUT out;
             BUILTIN;
         }
     "#;

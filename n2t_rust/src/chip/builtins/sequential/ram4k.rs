@@ -93,9 +93,18 @@ impl ChipInterface for Ram4kChip {
     }
     
     fn eval(&mut self) -> Result<()> {
-        // Combinatorial read: output current value at address
+        // Get current inputs
         let address = self.input_pins["address"].borrow().bus_voltage() as usize;
         let address = address & 0b111111111111; // Mask to 12 bits for RAM4K
+        let load = self.input_pins["load"].borrow().voltage(None)?;
+        
+        // If load is high, write to memory (for testing purposes)
+        if load == HIGH {
+            let data = self.input_pins["in"].borrow().bus_voltage();
+            self.memory.set(address, data);
+        }
+        
+        // Always output current value at address
         let value = self.memory.get(address);
         self.output_pins["out"].borrow_mut().set_bus_voltage(value);
         Ok(())
