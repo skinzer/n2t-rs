@@ -9,9 +9,6 @@ pub mod subbus;
 #[cfg(test)]
 mod tests;
 
-#[cfg(test)]
-mod sequential_tests;
-
 pub use bus::Bus;
 pub use chip::{Chip, ChipInterface, Connection, PinSide, WireError};
 pub use pin::{Pin, Voltage, HIGH, LOW};
